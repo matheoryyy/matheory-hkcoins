@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Matheory 超市購物樂</title>
+  <style>
+    :root {
+      --primary: #FF7A00;
+      --primary-dark: #E06300;
+      --secondary: #2B8A3E;
+      --bg-sky: #E3F6FF;
+      --bg-floor-light: #DEE2E6;
+      --bg-floor-dark: #CED4DA;
+      --text-main: #212529;
+      --text-muted: #6C757D;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang HK", "Microsoft JhengHei", sans-serif;
+    }
+
+    body {
+      background: linear-gradient(180deg, var(--bg-sky) 0%, #D0EBFF 45%, var(--bg-floor-light) 45%, var(--bg-floor-dark) 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 12px;
+      color: var(--text-main);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    .bg-scenery {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .bg-light-bulb {
+      position: absolute;
+      font-size: 32px;
+      opacity: 0.65;
+      top: 6px;
+    }
+
+    .bg-cart-icon {
+      position: absolute;
+      font-size: 28px;
+      opacity: 0.35;
+      bottom: 12px;
+    }
+
+    .top-bar {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      background: rgba(255, 255, 255, 0.94);
+      padding: 8px 14px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      gap: 8px;
+    }
+
+    .brand-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .brand-logo {
+      background: var(--primary);
+      color: #fff;
+      font-weight: 900;
+      font-size: 13px;
+      letter-spacing: 0.8px;
+      padding: 4px 9px;
+      border-radius: 8px;
+    }
+
+    .game-title-small {
+      font-weight: 800;
+      font-size: 15px;
+      color: #2B2D42;
+    }
+
+    .btn-switch {
+      background: #F1F3F5;
+      border: none;
+      color: #495057;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      flex-shrink: 0;
+    }
+
+    .game-container {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      max-width: 540px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .hud-box {
+      background: #FFFFFF;
+      border-radius: 14px;
+      padding: 8px 10px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.07);
+    }
+
+    .hud-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .hud-value {
+      font-size: 21px;
+      font-weight: 900;
+      color: #212529;
+    }
+
+    .hud-value.timer-warn {
+      color: #E03131;
+      animation: pulse 0.6s infinite alternate;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); }
+      to { transform: scale(1.12); }
+    }
+
+    .supermarket-board {
+      background: #FFF9DB;
+      border: 4px solid #FCC419;
+      border-radius: 22px;
+      padding: 12px 14px;
+      text-align: center;
+      box-shadow: 0 6px 16px rgba(250, 176, 5, 0.25);
+    }
+
+    .level-tag {
+      display: inline-block;
+      background: #2B8A3E;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 3px 12px;
+      border-radius: 99px;
+      margin-bottom: 8px;
+    }
+
+    .shelf-box {
+      background: #FFFFFF;
+      border: 2.5px solid #FFE066;
+      border-radius: 18px;
+      padding: 10px 12px;
+      margin-bottom: 10px;
+      position: relative;
+      box-shadow: 0 4px 0 #FFE066;
+    }
+
+    .shelf-items {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .item-card {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #F8F9FA;
+      border: 2px solid #E9ECEF;
+      border-radius: 14px;
+      padding: 6px 10px;
+    }
+
+    .item-emoji {
+      font-size: 34px;
+      line-height: 1;
+      animation: floatItem 2s infinite ease-in-out;
+    }
+
+    @keyframes floatItem {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    .item-meta {
+      text-align: left;
+    }
+
+    .item-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: #495057;
+    }
+
+    .item-price-tag {
+      display: inline-block;
+      background: #FFF4E6;
+      border: 1.5px solid #FF922B;
+      color: #D9480F;
+      font-size: 16px;
+      font-weight: 900;
+      padding: 1px 6px;
+      border-radius: 8px;
+      margin-top: 2px;
+    }
+
+    .plus-sign {
+      font-size: 22px;
+      font-weight: 900;
+      color: #FF7A00;
+    }
+
+    .tray-area {
+      background: #FFF4E6;
+      border: 2.5px dashed #FFA94D;
+      border-radius: 16px;
+      padding: 8px 10px;
+      min-height: 78px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .tray-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      font-weight: 800;
+      color: #8D5B4C;
+      margin-bottom: 4px;
+    }
+
+    .tray-total-badge {
+      background: #2B8A3E;
+      color: #fff;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .tray-coins {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 6px;
+      min-height: 42px;
+    }
+
+    .tray-empty-hint {
+      font-size: 13px;
+      color: #ADB5BD;
+      font-weight: 700;
+    }
+
+    .hk-coin {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      cursor: pointer;
+      transition: transform 0.1s;
+      position: relative;
+      box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25), inset 0 2px 3px rgba(255, 255, 255, 0.65);
+    }
+
+    .hk-coin:active {
+      transform: scale(0.92);
+    }
+
+    .coin-1000 {
+      width: 60px; height: 60px; border-radius: 50%;
+      background: radial-gradient(circle, #FFD43B 54%, #DEE2E6 58%, #CED4DA 100%);
+      border: 2.5px solid #868E96; color: #5C3A1B; font-size: 15px;
+    }
+    .coin-500 {
+      width: 56px; height: 56px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #F8F9FA, #CED4DA);
+      border: 3px solid #868E96; color: #212529; font-size: 15px;
+    }
+    .coin-200 {
+      width: 52px; height: 52px; border-radius: 36% 64% 38% 62% / 60% 38% 62% 40%;
+      background: radial-gradient(circle at 35% 35%, #F8F9FA, #CED4DA);
+      border: 2.5px solid #868E96; color: #212529; font-size: 14px;
+    }
+    .coin-100 {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #F8F9FA, #CED4DA);
+      border: 2px solid #868E96; color: #212529; font-size: 13.5px;
+    }
+    .coin-50 {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #FFE066, #E67700);
+      border: 2px solid #B05B00; color: #49281A; font-size: 12.5px;
+    }
+    .coin-20 {
+      width: 40px; height: 40px; border-radius: 38% 62% 36% 64% / 62% 36% 64% 38%;
+      background: radial-gradient(circle at 35% 35%, #FFE066, #E67700);
+      border: 2px solid #B05B00; color: #49281A; font-size: 12px;
+    }
+    .coin-10 {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #FFE066, #E67700);
+      border: 2px solid #B05B00; color: #49281A; font-size: 11.5px;
+    }
+
+    .tray-coins .hk-coin {
+      transform: scale(0.84);
+      margin: -3px;
+    }
+
+    .wallet-panel {
+      background: rgba(33, 37, 41, 0.12);
+      padding: 12px;
+      border-radius: 22px;
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    .wallet-label {
+      font-size: 12px;
+      font-weight: 800;
+      color: #343A40;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
+    .wallet-coins {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .action-row {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 8px;
+    }
+
+    .btn-clear {
+      background: #FFFFFF;
+      border: 2px solid #CED4DA;
+      color: #495057;
+      font-size: 15px;
+      font-weight: 800;
+      padding: 12px;
+      border-radius: 14px;
+      cursor: pointer;
+    }
+
+    .btn-pay {
+      background: var(--primary);
+      border: none;
+      color: #FFFFFF;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 12px;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 0 var(--primary-dark);
+    }
+
+    .float-feedback {
+      position: fixed;
+      font-size: 24px;
+      font-weight: 900;
+      pointer-events: none;
+      z-index: 999;
+      animation: floatUp 0.7s ease-out forwards;
+      text-shadow: 0 2px 4px rgba(255,255,255,0.95);
+    }
+
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(0.9); }
+      100% { opacity: 0; transform: translateY(-45px) scale(1.15); }
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(33, 37, 41, 0.72);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 100;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 28px;
+      padding: 20px 18px;
+      text-align: center;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.28);
+    }
+
+    .supermarket-cover {
+      background: linear-gradient(180deg, #EBFBEE 0%, #FFF9DB 100%);
+      border: 3px solid #51CF66;
+      border-radius: 22px;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .supermarket-awning {
+      height: 22px;
+      background: repeating-linear-gradient(
+        90deg,
+        #2B8A3E 0px, #2B8A3E 22px,
+        #FCC419 22px, #FCC419 44px
+      );
+      border-bottom: 3px solid #2B8A3E;
+    }
+
+    .supermarket-cover-body {
+      padding: 12px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .shelf-preview-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-size: 38px;
+      line-height: 1;
+    }
+
+    .cover-coin-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .mini-coin-badge {
+      width: 34px; height: 34px; border-radius: 50%;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 11px; font-weight: 900; box-shadow: 0 2px 0 rgba(0,0,0,0.2);
+    }
+
+    .modal-brand {
+      display: inline-block; background: #FFF4E6; color: var(--primary);
+      font-weight: 900; font-size: 12px; letter-spacing: 1px;
+      padding: 4px 12px; border-radius: 99px; margin-bottom: 6px;
+    }
+
+    .modal-title { font-size: 21px; font-weight: 900; color: #212529; margin-bottom: 5px; }
+    .modal-subtitle { font-size: 13.5px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.45; }
+
+    .level-list { display: flex; flex-direction: column; gap: 9px; }
+
+    .level-btn {
+      display: flex; align-items: center; justify-content: space-between;
+      width: 100%; padding: 11px 14px; border: 2px solid #E9ECEF;
+      border-radius: 16px; background: #F8F9FA; cursor: pointer; text-align: left; gap: 10px;
+    }
+
+    .level-left { display: flex; align-items: center; gap: 10px; }
+    .level-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
+    .level-info-title { font-size: 15px; font-weight: 800; color: #212529; }
+    .level-info-desc { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+    .level-arrow { background: var(--primary); color: #fff; font-weight: 900; font-size: 13px; padding: 6px 12px; border-radius: 10px; flex-shrink: 0; }
+
+    .result-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 14px 0 18px; }
+    .result-item { background: #F8F9FA; padding: 12px 6px; border-radius: 14px; }
+    .result-num { font-size: 22px; font-weight: 900; color: var(--primary); }
+    .result-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+    .btn-primary {
+      width: 100%; padding: 14px; border: none; border-radius: 14px;
+      background: var(--primary); color: #fff; font-size: 17px; font-weight: 800;
+      cursor: pointer; margin-bottom: 10px; box-shadow: 0 4px 12px rgba(255, 122, 0, 0.35);
+    }
+    .btn-secondary {
+      width: 100%; padding: 12px; border: 2px solid #DEE2E6; border-radius: 14px;
+      background: #FFFFFF; color: #495057; font-size: 15px; font-weight: 700; cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-scenery" aria-hidden="true">
+    <span class="bg-light-bulb" style="top: 4%; left: 10%;">💡</span>
+    <span class="bg-light-bulb" style="top: 4%; left: 50%;">💡</span>
+    <span class="bg-light-bulb" style="top: 4%; left: 88%;">💡</span>
+    <span class="bg-cart-icon" style="bottom: 8%; left: 6%;">🛒</span>
+    <span class="bg-cart-icon" style="bottom: 6%; right: 8%;">🛍️</span>
+  </div>
+
+  <div class="top-bar">
+    <div class="brand-badge">
+      <span class="brand-logo">MATHEORY</span>
+      <span class="game-title-small">Matheory 超市購物樂</span>
+    </div>
+    <button class="btn-switch" id="btnSwitchMode">切換關卡</button>
+  </div>
+
+  <div class="game-container">
+    <div class="hud">
+      <div class="hud-box">
+        <div class="hud-label">⏱️ 剩餘時間</div>
+        <div class="hud-value" id="timerDisplay">90s</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">⭐ 目前得分</div>
+        <div class="hud-value" id="scoreDisplay">0</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">🛒 結帳次數</div>
+        <div class="hud-value" id="countDisplay">0</div>
+      </div>
+    </div>
+
+    <div class="supermarket-board">
+      <div class="level-tag" id="currentLevelTag">關卡 1：20元內單件購物</div>
+      <div class="shelf-box">
+        <div class="shelf-items" id="shelfItems"></div>
+      </div>
+
+      <div class="tray-area">
+        <div class="tray-header">
+          <span>收銀付款盤・點擊硬幣可退回</span>
+          <span class="tray-total-badge" id="trayTotalBadge">已放：$0</span>
+        </div>
+        <div class="tray-coins" id="trayCoins">
+          <span class="tray-empty-hint">請點擊下方錢包硬幣付款</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="wallet-panel">
+      <div class="wallet-label">👛 我的錢包・點擊香港硬幣放入付款盤</div>
+      <div class="wallet-coins" id="walletCoins"></div>
+      <div class="action-row">
+        <button class="btn-clear" id="btnClear">清空重選</button>
+        <button class="btn-pay" id="btnPay">💰 確認結帳</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay" id="startOverlay">
+    <div class="modal-card">
+      <div class="supermarket-cover">
+        <div class="supermarket-awning"></div>
+        <div class="supermarket-cover-body">
+          <div class="shelf-preview-row">
+            <span>🛒</span><span>🥛</span><span>🍎</span><span>🍞</span><span>🧀</span>
+          </div>
+          <div class="cover-coin-row">
+            <span class="mini-coin-badge" style="background: radial-gradient(circle, #FFD43B 54%, #DEE2E6 58%); border: 2px solid #868E96;">$10</span>
+            <span class="mini-coin-badge" style="background: #E9ECEF; border: 2px solid #868E96;">$5</span>
+            <span class="mini-coin-badge" style="background: #E9ECEF; border: 2px solid #868E96; border-radius: 38% 62% 38% 62%;">$2</span>
+            <span class="mini-coin-badge" style="background: #E9ECEF; border: 2px solid #868E96;">$1</span>
+            <span class="mini-coin-badge" style="background: #FCC419; border: 2px solid #B05B00;">5角</span>
+            <span class="mini-coin-badge" style="background: #FCC419; border: 2px solid #B05B00; border-radius: 38% 62% 38% 62%;">2角</span>
+            <span class="mini-coin-badge" style="background: #FCC419; border: 2px solid #B05B00;">1角</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-brand">✨ matheory 香港硬幣應用訓練 ✨</div>
+      <h1 class="modal-title">Matheory 超市購物樂</h1>
+      <p class="modal-subtitle">限時 90 秒！在超級市場選購商品，點選剛剛好金額的香港硬幣到收銀台結帳吧！</p>
+
+      <div class="level-list">
+        <button class="level-btn" data-level="1">
+          <div class="level-left">
+            <div class="level-icon" style="background: #E7F5FF;">🛒</div>
+            <div>
+              <div class="level-info-title">關卡 1：20元內單件購物</div>
+              <div class="level-info-desc">使用 $1、$2、$5、$10 購買 $1 至 $20 商品</div>
+            </div>
+          </div>
+          <span class="level-arrow">開始</span>
+        </button>
+        <button class="level-btn" data-level="2">
+          <div class="level-left">
+            <div class="level-icon" style="background: #FFF0F6;">🛍️</div>
+            <div>
+              <div class="level-info-title">關卡 2：買兩件不同物件</div>
+              <div class="level-info-desc">選購兩樣不同商品，將元位價錢相加後付款</div>
+            </div>
+          </div>
+          <span class="level-arrow">開始</span>
+        </button>
+        <button class="level-btn" data-level="3">
+          <div class="level-left">
+            <div class="level-icon" style="background: #EBFBEE;">📦</div>
+            <div>
+              <div class="level-info-title">關卡 3：買兩件同一物件</div>
+              <div class="level-info-desc">選購兩件相同的商品，將元位價錢相加後付款</div>
+            </div>
+          </div>
+          <span class="level-arrow">開始</span>
+        </button>
+        <button class="level-btn" data-level="4">
+          <div class="level-left">
+            <div class="level-icon" style="background: #FFF9DB;">🪙</div>
+            <div>
+              <div class="level-info-title">關卡 4：有元有角購物</div>
+              <div class="level-info-desc">開放 1角、2角、5角，練習元與角混合標價</div>
+            </div>
+          </div>
+          <span class="level-arrow">開始</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="overlay hidden" id="endOverlay">
+    <div class="modal-card">
+      <div style="font-size: 48px; margin-bottom: 4px;">🎉🛒🏆</div>
+      <div class="modal-brand">matheory 香港硬幣應用訓練</div>
+      <h2 class="modal-title" id="resultRankTitle">精明小顧客！</h2>
+      <p class="modal-subtitle" id="resultLevelName">Matheory 超市購物樂</p>
+      <div class="result-grid">
+        <div class="result-item"><div class="result-num" id="finalScore">0</div><div class="result-label">總得分</div></div>
+        <div class="result-item"><div class="result-num" id="finalCorrect">0</div><div class="result-label">成功結帳</div></div>
+        <div class="result-item"><div class="result-num" id="finalMaxCombo">0</div><div class="result-label">最高連擊</div></div>
+      </div>
+      <button class="btn-primary" id="btnReplay">🔄 再逛一次超市</button>
+      <button class="btn-secondary" id="btnChooseOther">選擇其他關卡</button>
+    </div>
+  </div>
+
+  <script>
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function playTone(type) {
+      try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const now = audioCtx.currentTime;
+        if (type === 'coin') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(1200, now);
+          osc.frequency.exponentialRampToValueAtTime(1800, now + 0.08);
+          gain.gain.setValueAtTime(0.14, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.09);
+          osc.start(now); osc.stop(now + 0.09);
+        } else if (type === 'hit') {
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(523.25, now);
+          osc.frequency.exponentialRampToValueAtTime(1046.5, now + 0.18);
+          gain.gain.setValueAtTime(0.22, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+          osc.start(now); osc.stop(now + 0.2);
+        } else if (type === 'miss') {
+          osc.type = 'sawtooth';
+          osc.frequency.setValueAtTime(180, now);
+          osc.frequency.linearRampToValueAtTime(120, now + 0.2);
+          gain.gain.setValueAtTime(0.18, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+          osc.start(now); osc.stop(now + 0.22);
+        } else if (type === 'tick') {
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(700, now);
+          gain.gain.setValueAtTime(0.08, now);
+          gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06);
+          osc.start(now); osc.stop(now + 0.06);
+        }
+      } catch (e) {}
+    }
+
+    const ALL_COINS = [
+      { cents: 10, label: '1角', cls: 'coin-10' },
+      { cents: 20, label: '2角', cls: 'coin-20' },
+      { cents: 50, label: '5角', cls: 'coin-50' },
+      { cents: 100, label: '$1', cls: 'coin-100' },
+      { cents: 200, label: '$2', cls: 'coin-200' },
+      { cents: 500, label: '$5', cls: 'coin-500' },
+      { cents: 1000, label: '$10', cls: 'coin-1000' }
+    ];
+
+    const SUPERMARKET_ITEMS = [
+      { emoji: '🥛', name: '鮮牛奶' },
+      { emoji: '🍞', name: '方包' },
+      { emoji: '🍎', name: '富士蘋果' },
+      { emoji: '🍌', name: '香蕉' },
+      { emoji: '🥚', name: '雞蛋' },
+      { emoji: '🧃', name: '橙汁' },
+      { emoji: '🧀', name: '芝士片' },
+      { emoji: '🍪', name: '牛油曲奇' },
+      { emoji: '🍓', name: '士多啤梨' },
+      { emoji: '🥦', name: '西蘭花' },
+      { emoji: '🍦', name: '雪糕杯' },
+      { emoji: '🍙', name: '飯糰' }
+    ];
+
+    const LEVEL_NAMES = {
+      1: '關卡 1：20元內單件購物',
+      2: '關卡 2：買兩件不同物件',
+      3: '關卡 3：買兩件同一物件',
+      4: '關卡 4：有元有角購物'
+    };
+
+    let currentLevel = 1;
+    let targetCents = 0;
+    let selectedCoins = [];
+    let score = 0;
+    let combo = 0;
+    let maxCombo = 0;
+    let correctCount = 0;
+    let timeLeft = 90;
+    let isPlaying = false;
+    let timerInterval = null;
+
+    function formatHKD(cents) {
+      if (cents === 0) return '$0';
+      const dollars = Math.floor(cents / 100);
+      const rem = cents % 100;
+      if (rem === 0) return `$${dollars}`;
+      if (dollars === 0) return `${rem / 10}角`;
+      return `$${dollars}.${rem < 10 ? '0' + rem : rem}`;
+    }
+
+    function renderWallet(level) {
+      const walletEl = document.getElementById('walletCoins');
+      walletEl.innerHTML = '';
+      const available = level === 4 ? ALL_COINS : ALL_COINS.filter(c => c.cents >= 100);
+      available.forEach(c => {
+        const btn = document.createElement('div');
+        btn.className = `hk-coin ${c.cls}`;
+        btn.textContent = c.label;
+        btn.addEventListener('pointerdown', () => addCoin(c));
+        walletEl.appendChild(btn);
+      });
+    }
+
+    function addCoin(coin) {
+      if (!isPlaying) return;
+      if (selectedCoins.length >= 12) return;
+      playTone('coin');
+      selectedCoins.push(coin);
+      renderTray();
+    }
+
+    function removeCoin(idx) {
+      if (!isPlaying) return;
+      playTone('coin');
+      selectedCoins.splice(idx, 1);
+      renderTray();
+    }
+
+    function renderTray() {
+      const trayEl = document.getElementById('trayCoins');
+      const badge = document.getElementById('trayTotalBadge');
+      const total = selectedCoins.reduce((sum, c) => sum + c.cents, 0);
+
+      badge.textContent = `已放：${formatHKD(total)}`;
+      trayEl.innerHTML = '';
+      if (selectedCoins.length === 0) {
+        trayEl.innerHTML = '<span class="tray-empty-hint">請點擊下方錢包硬幣付款</span>';
+        return;
+      }
+      selectedCoins.forEach((c, idx) => {
+        const el = document.createElement('div');
+        el.className = `hk-coin ${c.cls}`;
+        el.textContent = c.label;
+        el.addEventListener('pointerdown', () => removeCoin(idx));
+        trayEl.appendChild(el);
+      });
+    }
+
+    function pickTwoItems() {
+      const idx1 = Math.floor(Math.random() * SUPERMARKET_ITEMS.length);
+      let idx2 = Math.floor(Math.random() * SUPERMARKET_ITEMS.length);
+      if (idx2 === idx1) idx2 = (idx1 + 1) % SUPERMARKET_ITEMS.length;
+      return [SUPERMARKET_ITEMS[idx1], SUPERMARKET_ITEMS[idx2]];
+    }
+
+    function nextProduct() {
+      selectedCoins = [];
+      const shelfEl = document.getElementById('shelfItems');
+      shelfEl.innerHTML = '';
+
+      if (currentLevel === 1) {
+        const item = SUPERMARKET_ITEMS[Math.floor(Math.random() * SUPERMARKET_ITEMS.length)];
+        const dollars = Math.floor(Math.random() * 20) + 1;
+        targetCents = dollars * 100;
+        shelfEl.innerHTML = `
+          <div class="item-card">
+            <div class="item-emoji">${item.emoji}</div>
+            <div class="item-meta">
+              <div class="item-name">${item.name}</div>
+              <div class="item-price-tag">${formatHKD(targetCents)}</div>
+            </div>
+          </div>
+        `;
+      } else if (currentLevel === 2) {
+        const [item1, item2] = pickTwoItems();
+        const d1 = Math.floor(Math.random() * 8) + 1;
+        const d2 = Math.floor(Math.random() * (18 - d1)) + 1;
+        const c1 = d1 * 100;
+        const c2 = d2 * 100;
+        targetCents = c1 + c2;
+        shelfEl.innerHTML = `
+          <div class="item-card">
+            <div class="item-emoji">${item1.emoji}</div>
+            <div class="item-meta">
+              <div class="item-name">${item1.name}</div>
+              <div class="item-price-tag">${formatHKD(c1)}</div>
+            </div>
+          </div>
+          <div class="plus-sign">+</div>
+          <div class="item-card">
+            <div class="item-emoji">${item2.emoji}</div>
+            <div class="item-meta">
+              <div class="item-name">${item2.name}</div>
+              <div class="item-price-tag">${formatHKD(c2)}</div>
+            </div>
+          </div>
+        `;
+      } else if (currentLevel === 3) {
+        const item = SUPERMARKET_ITEMS[Math.floor(Math.random() * SUPERMARKET_ITEMS.length)];
+        const unitDollars = Math.floor(Math.random() * 10) + 1;
+        const unitCents = unitDollars * 100;
+        targetCents = unitCents * 2;
+        shelfEl.innerHTML = `
+          <div class="item-card">
+            <div class="item-emoji">${item.emoji}</div>
+            <div class="item-meta">
+              <div class="item-name">${item.name}</div>
+              <div class="item-price-tag">${formatHKD(unitCents)}</div>
+            </div>
+          </div>
+          <div class="plus-sign">+</div>
+          <div class="item-card">
+            <div class="item-emoji">${item.emoji}</div>
+            <div class="item-meta">
+              <div class="item-name">${item.name}</div>
+              <div class="item-price-tag">${formatHKD(unitCents)}</div>
+            </div>
+          </div>
+        `;
+      } else {
+        const item = SUPERMARKET_ITEMS[Math.floor(Math.random() * SUPERMARKET_ITEMS.length)];
+        const dollars = Math.floor(Math.random() * 18) + 1;
+        const tenths = Math.floor(Math.random() * 9) + 1;
+        targetCents = dollars * 100 + tenths * 10;
+        shelfEl.innerHTML = `
+          <div class="item-card">
+            <div class="item-emoji">${item.emoji}</div>
+            <div class="item-meta">
+              <div class="item-name">${item.name}</div>
+              <div class="item-price-tag">${formatHKD(targetCents)}</div>
+            </div>
+          </div>
+        `;
+      }
+      renderTray();
+    }
+
+    function showFloatFeedback(text, color) {
+      const el = document.createElement('div');
+      el.className = 'float-feedback';
+      el.textContent = text;
+      el.style.left = '50%'; el.style.top = '42%';
+      el.style.transform = 'translateX(-50%)'; el.style.color = color;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 700);
+    }
+
+    function checkPayment() {
+      if (!isPlaying) return;
+      const total = selectedCoins.reduce((sum, c) => sum + c.cents, 0);
+      if (total === targetCents) {
+        playTone('hit');
+        combo++;
+        if (combo > maxCombo) maxCombo = combo;
+        correctCount++;
+        const earned = 15 + Math.min(combo * 3, 25);
+        score += earned;
+        updateHUD();
+        showFloatFeedback(`剛剛好！+${earned}`, '#2B8A3E');
+        setTimeout(nextProduct, 350);
+      } else {
+        playTone('miss');
+        combo = 0;
+        score = Math.max(0, score - 5);
+        updateHUD();
+        const diffMsg = total < targetCents ? '金額不夠喔！' : '付太多啦！';
+        showFloatFeedback(`${diffMsg} -5`, '#E03131');
+      }
+    }
+
+    function updateHUD() {
+      const timerEl = document.getElementById('timerDisplay');
+      timerEl.textContent = `${timeLeft}s`;
+      timerEl.classList.toggle('timer-warn', timeLeft <= 10 && isPlaying);
+      document.getElementById('scoreDisplay').textContent = score;
+      document.getElementById('countDisplay').textContent = correctCount;
+    }
+
+    function startGame(lvl) {
+      currentLevel = lvl;
+      score = 0; combo = 0; maxCombo = 0; correctCount = 0; timeLeft = 90; isPlaying = true;
+      document.getElementById('currentLevelTag').textContent = LEVEL_NAMES[lvl];
+      document.getElementById('startOverlay').classList.add('hidden');
+      document.getElementById('endOverlay').classList.add('hidden');
+      renderWallet(lvl);
+      updateHUD();
+      nextProduct();
+      clearInterval(timerInterval);
+      timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 10 && timeLeft > 0) playTone('tick');
+        updateHUD();
+        if (timeLeft <= 0) endGame();
+      }, 1000);
+    }
+
+    function endGame() {
+      isPlaying = false;
+      clearInterval(timerInterval);
+      document.getElementById('finalScore').textContent = score;
+      document.getElementById('finalCorrect').textContent = correctCount;
+      document.getElementById('finalMaxCombo').textContent = maxCombo;
+      document.getElementById('resultLevelName').textContent = `Matheory 超市購物樂・${LEVEL_NAMES[currentLevel]}`;
+
+      let rank = '繼續逛逛超市，認幣與付款會更快喔！';
+      if (score >= 220) rank = '超級精明小顧客！太厲害了！';
+      else if (score >= 120) rank = 'Matheory 超市購物達人！';
+      else if (score >= 60) rank = '表現很棒！點算硬幣越來越熟練！';
+      document.getElementById('resultRankTitle').textContent = rank;
+      document.getElementById('endOverlay').classList.remove('hidden');
+    }
+
+    document.querySelectorAll('.level-btn').forEach(btn => {
+      btn.addEventListener('click', () => startGame(Number(btn.dataset.level)));
+    });
+    document.getElementById('btnClear').addEventListener('pointerdown', () => {
+      if (!isPlaying) return;
+      playTone('coin'); selectedCoins = []; renderTray();
+    });
+    document.getElementById('btnPay').addEventListener('pointerdown', checkPayment);
+    document.getElementById('btnReplay').addEventListener('click', () => startGame(currentLevel));
+    document.getElementById('btnChooseOther').addEventListener('click', () => {
+      document.getElementById('endOverlay').classList.add('hidden');
+      document.getElementById('startOverlay').classList.remove('hidden');
+    });
+    document.getElementById('btnSwitchMode').addEventListener('click', () => {
+      isPlaying = false; clearInterval(timerInterval);
+      document.getElementById('startOverlay').classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
