@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Matheory 超市購物樂</title>
+  <title>MATHEORY 超市購物樂🛒</title>
   <style>
     :root {
       --primary: #FF7A00;
@@ -543,7 +543,7 @@
   <div class="top-bar">
     <div class="brand-badge">
       <span class="brand-logo">MATHEORY</span>
-      <span class="game-title-small">Matheory 超市購物樂</span>
+      <span class="game-title-small">MATHEORY 超市購物樂🛒</span>
     </div>
     <button class="btn-switch" id="btnSwitchMode">切換關卡</button>
   </div>
@@ -552,7 +552,7 @@
     <div class="hud">
       <div class="hud-box">
         <div class="hud-label">⏱️ 剩餘時間</div>
-        <div class="hud-value" id="timerDisplay">90s</div>
+        <div class="hud-value" id="timerDisplay">120s</div>
       </div>
       <div class="hud-box">
         <div class="hud-label">⭐ 目前得分</div>
@@ -612,8 +612,8 @@
       </div>
 
       <div class="modal-brand">✨ matheory 香港硬幣應用訓練 ✨</div>
-      <h1 class="modal-title">Matheory 超市購物樂</h1>
-      <p class="modal-subtitle">限時 90 秒！在超級市場選購商品，點選剛剛好金額的香港硬幣到收銀台結帳吧！</p>
+      <h1 class="modal-title">MATHEORY 超市購物樂🛒</h1>
+      <p class="modal-subtitle">限時 120 秒！在超級市場選購商品，點選剛剛好金額的香港硬幣到收銀台結帳吧！</p>
 
       <div class="level-list">
         <button class="level-btn" data-level="1">
@@ -665,7 +665,7 @@
       <div style="font-size: 48px; margin-bottom: 4px;">🎉🛒🏆</div>
       <div class="modal-brand">matheory 香港硬幣應用訓練</div>
       <h2 class="modal-title" id="resultRankTitle">精明小顧客！</h2>
-      <p class="modal-subtitle" id="resultLevelName">Matheory 超市購物樂</p>
+      <p class="modal-subtitle" id="resultLevelName">MATHEORY 超市購物樂🛒</p>
       <div class="result-grid">
         <div class="result-item"><div class="result-num" id="finalScore">0</div><div class="result-label">總得分</div></div>
         <div class="result-item"><div class="result-num" id="finalCorrect">0</div><div class="result-label">成功結帳</div></div>
@@ -759,7 +759,7 @@
     let combo = 0;
     let maxCombo = 0;
     let correctCount = 0;
-    let timeLeft = 90;
+    let timeLeft = 120;
     let isPlaying = false;
     let timerInterval = null;
 
@@ -952,7 +952,7 @@
 
     function startGame(lvl) {
       currentLevel = lvl;
-      score = 0; combo = 0; maxCombo = 0; correctCount = 0; timeLeft = 90; isPlaying = true;
+      score = 0; combo = 0; maxCombo = 0; correctCount = 0; timeLeft = 120; isPlaying = true;
       document.getElementById('currentLevelTag').textContent = LEVEL_NAMES[lvl];
       document.getElementById('startOverlay').classList.add('hidden');
       document.getElementById('endOverlay').classList.add('hidden');
